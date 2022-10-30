@@ -15,8 +15,6 @@ void date_parse(tDate* date, const char* text);
 // Compare two tDate structures and return true if they contain the same value or false otherwise.
 bool date_equals(tDate date1, tDate date2);
 
-// Maximum number of projects
-#define MAX_PROJECTS 150
 // Maximum length of project code
 #define MAX_PROJECT_CODE 7
 // Maximum length of a ong code
@@ -40,7 +38,7 @@ typedef struct {
 } tProject;
 
 typedef struct {
-    tProject elems[MAX_PROJECTS];
+    tProject* elems;
     int count;
 } tProjectData;
 

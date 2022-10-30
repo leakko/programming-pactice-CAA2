@@ -29,6 +29,9 @@ void projectData_init(tProjectData* data)
 {
     // Set the initial number of elements to zero.
     data->count = 0;
+
+    // Assign NULL to pointer to indicate that there isnt reserved memory
+    data->elems = NULL;
 }
 
 // Get the number of projects
@@ -88,16 +91,21 @@ void projectData_add(tProjectData* data, tProject proj)
 {
     int idx;
     // Check input data (Pre-conditions)
-    assert(data != NULL);    
+    assert(data != NULL);
     
     // Check if an entry with this data already exists
     idx = projectData_find(*data, proj.code, proj.detail.city, proj.detail.date);
     
     // If it does not exist, create a new entry, otherwise add the money and thenumber of people
     if (idx < 0) {
-        assert(data->count < MAX_PROJECTS);
+        // We reserve memory depending on whether the project data vector is null or not
+        if( data->count == 0 ) {
+            data->elems = (tProject*)malloc(sizeof(tProject));
+        } else {
+            data->elems = (tProject*)realloc(data->elems, (data->count + 1) * sizeof(tProject));
+        }
         project_cpy(&(data->elems[data->count]), proj);
-        data->count++;        
+        data->count++;
     } else {
         data->elems[idx].detail.cost += proj.detail.cost;
         data->elems[idx].detail.numPeople += proj.detail.numPeople;
@@ -125,7 +133,14 @@ void projectData_del(tProjectData* data, const char* code, const char* city, tDa
                 project_cpy(&(data->elems[i]), data->elems[i+1]);
             }
             // Update the number of elements
-            data->count--;     
+            data->count--;
+            // Free the memory
+            if( data->count == 0 ) {
+                free( data->elems );
+                data->elems = NULL;
+            } else {
+                data->elems = (tProject*)realloc(data->elems, (data->count) * sizeof(tProject));
+            }
         }
     }
 }
@@ -168,5 +183,9 @@ void project_cpy(tProject* destination, tProject source)
 // Remove all elements
 void projectData_free(tProjectData* data) 
 {
-    // TODO
+    if( data->elems != NULL) {
+        data->count = 0;
+        free(data->elems);
+        data->elems = NULL;
+    }
 }

@@ -1,7 +1,7 @@
 #ifndef __PERSON_H__
 #define __PERSON_H__
 #include "csv.h"
-#include "date.h"
+#include "project.h"
 
 typedef struct _tPerson {
     char* document;
