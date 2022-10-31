@@ -1,14 +1,12 @@
-var
-    i: integer;
-    j: integer;
-    found: boolean;
-    isAvailable: boolean;
-    isPersonInStaff: boolean;
-end var
-
 // Function all-in-one
 
 function isAvailable(availabilities: tAvailabilityData, campaigns: tCampaignData, person: tPerson, date: tDate): boolean {
+    var
+        i: integer;
+        j: integer;
+        isAvailable: boolean;
+        isPersonInStaff: boolean;
+    end var
 
     isAvailable := false;
     
@@ -38,11 +36,17 @@ function isAvailable(availabilities: tAvailabilityData, campaigns: tCampaignData
         end if
 
     end for
+
+    return isAvailable;
 }
 
 // Function using top-down design
 
 function isAvailable(availabilities: tAvailabilityData, campaigns: tCampaignData, person: tPerson, date: tDate): boolean {
+
+    var
+        isAvailable: boolean;
+    end var
 
     isAvailable := checkAvailability(availabilities, person, date) and checkOtherCampaings(campaigns, person, date);
 
@@ -53,8 +57,11 @@ function isAvailable(availabilities: tAvailabilityData, campaigns: tCampaignData
 // This will return true if the person is available according to tAvailabilityData, and false otherwise
 function checkAvailability(availabilities: tAvailabilityData, person: tPerson, date: tDate) {
     var
-        isAvailable: boolean = false;
+        i: integer;
+        isAvailable: boolean;
     end var
+
+    isAvailable := false;
 
     for i := 1 to availabilities.count do
         if availabilities.elems[i].person.document = person.document  then
@@ -74,8 +81,13 @@ function checkAvailability(availabilities: tAvailabilityData, person: tPerson, d
 // This will return true if the person has not conflicts with other campaings, and therefore is available, and false otherwise
 function checkOtherCampaings(campaigns: tCampaignData, person: tPerson, date: tDate) {
     var
-        isAvailable: boolean = true;
+        i: integer;
+        j: integer;
+        isAvailable: boolean;
+        isPersonInStaff: boolean;
     end var
+
+    isAvailable := true;
 
     for i := 1 to campaigns.count do
         isPersonInStaff := false;
