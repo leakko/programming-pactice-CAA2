@@ -1,0 +1,96 @@
+var
+    i: integer;
+    j: integer;
+    found: boolean;
+    isAvailable: boolean;
+    isPersonInStaff: boolean;
+end var
+
+// Function all-in-one
+
+function isAvailable(availabilities: tAvailabilityData, campaigns: tCampaignData, person: tPerson, date: tDate): boolean {
+
+    isAvailable := false;
+    
+    for i := 1 to availabilities.count do
+        if availabilities.elems[i].person.document = person.document  then
+            if 
+            (date_cmp( availabilities.elems[i].start, date ) = 0 or date_cmp( availabilities.elems[i].start, date ) = -1 ) 
+            and 
+            ( date_cmp( availabilities.elems[i].end, date ) = 0 or date_cmp( availabilities.elems[i].end, date ) = 1 )
+            then
+                isAvailable = true;
+            end if
+        end if
+    end for
+
+    for i := 1 to campaigns.count do
+        isPersonInStaff := false;
+
+        for j:= 1 to campaigns.elems[i].staff.count do
+            if campaigns.elems[i].staff.elems[j].document = person.document do
+                isPersonInStaff := true;
+            end if
+        end for
+
+        if isPersonInStaff and date_cmp( campaigns.elems[i].detail.date, date ) = 0 do
+            isAvailable = false;
+        end if
+
+    end for
+}
+
+// Function using top-down design
+
+function isAvailable(availabilities: tAvailabilityData, campaigns: tCampaignData, person: tPerson, date: tDate): boolean {
+
+    isAvailable := checkAvailability(availabilities, person, date) and checkOtherCampaings(campaigns, person, date);
+
+    return isAvailable;
+
+}
+
+// This will return true if the person is available according to tAvailabilityData, and false otherwise
+function checkAvailability(availabilities: tAvailabilityData, person: tPerson, date: tDate) {
+    var
+        isAvailable: boolean = false;
+    end var
+
+    for i := 1 to availabilities.count do
+        if availabilities.elems[i].person.document = person.document  then
+            if 
+            (date_cmp( availabilities.elems[i].start, date ) = 0 or date_cmp( availabilities.elems[i].start, date ) = -1 ) 
+            and 
+            ( date_cmp( availabilities.elems[i].end, date ) = 0 or date_cmp( availabilities.elems[i].end, date ) = 1 )
+            then
+                isAvailable = true;
+            end if
+        end if
+    end for
+
+    return isAvailable;
+}
+
+// This will return true if the person has not conflicts with other campaings, and therefore is available, and false otherwise
+function checkOtherCampaings(campaigns: tCampaignData, person: tPerson, date: tDate) {
+    var
+        isAvailable: boolean = true;
+    end var
+
+    for i := 1 to campaigns.count do
+        isPersonInStaff := false;
+
+        for j:= 1 to campaigns.elems[i].staff.count do
+            if campaigns.elems[i].staff.elems[j].document = person.document do
+                isPersonInStaff := true;
+            end if
+        end for
+
+        if isPersonInStaff and date_cmp( campaigns.elems[i].detail.date, date ) = 0 do
+            isAvailable = false;
+        end if
+
+    end for
+
+    return isAvailable;
+}
